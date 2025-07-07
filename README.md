@@ -1,34 +1,73 @@
-user_score = 0
+import tkinter as tk
+import random
+
+# Scores
+player_score = 0
 computer_score = 0
-rounds = 0
 
-while True:
-    user_choice = input("Enter rock, paper, or scissors (or 'quit' to stop): ").lower()
-    
-    if user_choice == "quit":
-        print(f"Final Score -> You: {user_score} | Computer: {computer_score}")
-        print("Thanks for playing!")
-        break
-
-    if user_choice not in choices:
-        print("❌ Invalid choice! Try again.")
-        continue
-
-    computer_choice = random.choice(choices)
-    print(f"🖥️ Computer chose: {computer_choice}")
-
-    if user_choice == computer_choice:
-        print("⚖️ It's a tie!")
-    elif (user_choice == "rock" and computer_choice == "scissors") or \
-         (user_choice == "scissors" and computer_choice == "paper") or \
-         (user_choice == "paper" and computer_choice == "rock"):
-        print("🎉 You win this round!")
-        user_score += 1
+# Determine winner
+def get_winner(player, computer):
+    if player == computer:
+        return "tie"
+    elif (player == "Rock" and computer == "Scissors") or \
+         (player == "Paper" and computer == "Rock") or \
+         (player == "Scissors" and computer == "Paper"):
+        return "player"
     else:
-        print("😢 You lose this round!")
+        return "computer"
+
+# Main game logic
+def play(choice):
+    global player_score, computer_score
+
+    computer_choice = random.choice(["Rock", "Paper", "Scissors"])
+    winner = get_winner(choice, computer_choice)
+
+    if winner == "player":
+        player_score += 1
+        result_label.config(text=f"Computer chose: {computer_choice}\nYou Win! 😎", fg="green")
+    elif winner == "computer":
         computer_score += 1
-    
-    rounds += 1
-    print(f"📊 Score -> You: {user_score} | Computer: {computer_score}")
-    print("-" * 30)
-# Rock-Paper-Scissor
+        result_label.config(text=f"Computer chose: {computer_choice}\nYou Lose! 😢", fg="red")
+    else:
+        result_label.config(text=f"Computer chose: {computer_choice}\nIt's a Tie! 🤝", fg="green")
+
+    score_label.config(text=f"You: {player_score}   Computer: {computer_score}")
+
+# Reset function
+def reset_game():
+    global player_score, computer_score
+    player_score = 0
+    computer_score = 0
+    result_label.config(text="", fg="black")
+    score_label.config(text="You: 0   Computer: 0")
+
+# GUI setup
+root = tk.Tk()
+root.title("Rock Paper Scissors")
+root.geometry("400x350")
+root.config(bg="white")
+
+# Heading
+tk.Label(root, text="Choose Rock, Paper or Scissors", font=("Helvetica", 14, "bold"), bg="white").pack(pady=10)
+
+# Buttons frame
+button_frame = tk.Frame(root, bg="white")
+button_frame.pack(pady=10)
+
+tk.Button(button_frame, text="Rock", width=10, bg="black", fg="white", command=lambda: play("Rock")).pack(side="left", padx=5)
+tk.Button(button_frame, text="Paper", width=10, bg="green", fg="white", command=lambda: play("Paper")).pack(side="left", padx=5)
+tk.Button(button_frame, text="Scissors", width=10, bg="red", fg="white", command=lambda: play("Scissors")).pack(side="left", padx=5)
+
+# Result and Score
+result_label = tk.Label(root, text="", font=("Helvetica", 12), bg="white")
+result_label.pack(pady=10)
+
+score_label = tk.Label(root, text="You: 0   Computer: 0", font=("Helvetica", 12, "bold"), bg="white")
+score_label.pack(pady=5)
+
+# Reset Button
+tk.Button(root, text="Reset Game 🔁", bg="skyblue", command=reset_game).pack(pady=10)
+
+# Run the app
+root.mainloop()
